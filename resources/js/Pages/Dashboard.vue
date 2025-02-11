@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import Location from '@/Components/Location.vue';
 </script>
 
 <template>
@@ -17,22 +20,37 @@ import { Head } from '@inertiajs/vue3';
 
     <div class="py-12">
       <div class="mx-auto max-w-7xl max-w-[800px] sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
-          <div class="flex flex-col justify-center space-y-4 p-6 text-gray-900 dark:text-gray-100">
-            <label for="location" class="text-lg"> Enter Your Location </label>
+        <div class="bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
+          <div
+            class="flex flex-col justify-center p-6 text-gray-900 dark:text-gray-100"
+          >
+            <Location />
 
-            <input
-              id="location"
-              type="text"
-              placeholder="London"
-              class="rounded-md border text-black text-lg"
+            <hr
+              class="my-4 h-0.5 rounded-full border-0 bg-gradient-to-r from-gray-800 via-gray-50 to-gray-800"
             />
 
-            <button
-              class="mx-auto inline-block rounded-md bg-green-500 px-4 py-2 text-xl text-white"
-            >
-              Save
-            </button>
+            <InputLabel value="Enter New Location" />
+
+            <TextInput
+              model-value=""
+              class="w-full rounded-md border text-lg text-black"
+              placeholder="London"
+            />
+
+            <div class="mt-4 flex flex-row justify-between">
+              <button
+                class="inline-block max-w-[180px] rounded-md bg-blue-700 px-4 py-2 text-lg text-white transition hover:bg-blue-500"
+              >
+                Add New
+              </button>
+
+              <button
+                class="right inline-block max-w-[180px] rounded-md bg-green-700 px-4 py-2 text-lg text-white transition hover:bg-green-500"
+              >
+                Save
+              </button>
+            </div>
           </div>
         </div>
       </div>
