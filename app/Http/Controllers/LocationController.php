@@ -17,7 +17,7 @@ class LocationController extends Controller
         Location::query()->create([
             'user_id' => auth()->id(),
             'name' => $request->name,
-            'notify_by' => '',
+            'notify_by' => [],
         ]);
 
         return Redirect::route('dashboard');
