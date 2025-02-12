@@ -1,9 +1,33 @@
 <script setup lang="ts">
 import InputLabel from '@/Components/InputLabel.vue';
+import Location from '@/Components/Location.vue';
 import TextInput from '@/Components/TextInput.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import Location from '@/Components/Location.vue';
+import { Head, router } from '@inertiajs/vue3';
+import axios from 'axios';
+import { computed, provide, ref } from 'vue';
+
+const props = defineProps({
+  locations: Object,
+  notificationTypes: Array,
+});
+
+provide('notificationTypes', props.notificationTypes);
+
+const newLocation = ref('');
+
+const canAddLocation = computed(() => {
+  return !newLocation.value || newLocation.value.length < 3;
+});
+
+const handleAddNewLocation = () => {
+  axios
+    .post(route('locations.store'), { name: newLocation.value })
+    .then((response) => {
+      newLocation.value = '';
+      router.reload({ only: ['locations'] });
+    });
+};
 </script>
 
 <template>
@@ -24,7 +48,13 @@ import Location from '@/Components/Location.vue';
           <div
             class="flex flex-col justify-center p-6 text-gray-900 dark:text-gray-100"
           >
-            <Location />
+            <div class="max-h-[50vh] overflow-y-auto">
+              <Location
+                v-for="location in locations"
+                :key="location.id"
+                :location="location"
+              />
+            </div>
 
             <hr
               class="my-4 h-0.5 rounded-full border-0 bg-gradient-to-r from-gray-800 via-gray-50 to-gray-800"
@@ -33,22 +63,18 @@ import Location from '@/Components/Location.vue';
             <InputLabel value="Enter New Location" />
 
             <TextInput
-              model-value=""
+              v-model="newLocation"
               class="w-full rounded-md border text-lg text-black"
               placeholder="London"
             />
 
-            <div class="mt-4 flex flex-row justify-between">
+            <div class="mt-4 flex flex-row justify-end">
               <button
-                class="inline-block max-w-[180px] rounded-md bg-blue-700 px-4 py-2 text-lg text-white transition hover:bg-blue-500"
+                :disabled="canAddLocation"
+                @click="handleAddNewLocation"
+                class="right inline-block max-w-[180px] rounded-md bg-green-700 px-4 py-2 text-lg text-white transition hover:bg-green-500 disabled:bg-gray-500"
               >
-                Add New
-              </button>
-
-              <button
-                class="right inline-block max-w-[180px] rounded-md bg-green-700 px-4 py-2 text-lg text-white transition hover:bg-green-500"
-              >
-                Save
+                Add
               </button>
             </div>
           </div>
