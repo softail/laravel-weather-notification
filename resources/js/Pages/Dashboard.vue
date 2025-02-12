@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import InputLabel from '@/Components/InputLabel.vue';
+import AddLocation from '@/Components/AddLocation.vue';
 import Location from '@/Components/Location.vue';
-import TextInput from '@/Components/TextInput.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
-import axios from 'axios';
-import { computed, provide, ref } from 'vue';
+import { Head } from '@inertiajs/vue3';
+import { provide } from 'vue';
 
 const props = defineProps({
   locations: Object,
@@ -13,21 +11,6 @@ const props = defineProps({
 });
 
 provide('notificationTypes', props.notificationTypes);
-
-const newLocation = ref('');
-
-const canAddLocation = computed(() => {
-  return !newLocation.value || newLocation.value.length < 3;
-});
-
-const handleAddNewLocation = () => {
-  axios
-    .post(route('locations.store'), { name: newLocation.value })
-    .then((response) => {
-      newLocation.value = '';
-      router.reload({ only: ['locations'] });
-    });
-};
 </script>
 
 <template>
@@ -60,23 +43,7 @@ const handleAddNewLocation = () => {
               class="my-4 h-0.5 rounded-full border-0 bg-gradient-to-r from-gray-800 via-gray-50 to-gray-800"
             />
 
-            <InputLabel value="Enter New Location" />
-
-            <TextInput
-              v-model="newLocation"
-              class="w-full rounded-md border text-lg text-black"
-              placeholder="London"
-            />
-
-            <div class="mt-4 flex flex-row justify-end">
-              <button
-                :disabled="canAddLocation"
-                @click="handleAddNewLocation"
-                class="right inline-block max-w-[180px] rounded-md bg-green-700 px-4 py-2 text-lg text-white transition hover:bg-green-500 disabled:bg-gray-500"
-              >
-                Add
-              </button>
-            </div>
+            <AddLocation />
           </div>
         </div>
       </div>
