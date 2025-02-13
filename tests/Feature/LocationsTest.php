@@ -13,6 +13,10 @@ beforeEach(function () {
 it('can store a new location', function () {
     $requestData = [
         'name' => 'Test Location',
+        'coordinates' => [
+            'lat' => Faker\Provider\ar_SA\Address::latitude(),
+            'lon' => Faker\Provider\ar_SA\Address::longitude(),
+        ],
     ];
 
     $response = $this

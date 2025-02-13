@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Location extends Model
 {
@@ -12,7 +13,15 @@ class Location extends Model
         'user_id',
         'name',
         'notify_by',
+        'coordinates',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'coordinates' => 'array',
+        ];
+    }
 
     protected function notifyBy(): Attribute
     {
@@ -25,5 +34,13 @@ class Location extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Scope a query to only include locations with has notification enabled.
+     */
+    public function scopeHasNotifyBy(Builder $query): void
+    {
+        $query->where('notify_by', '!=', '');
     }
 }

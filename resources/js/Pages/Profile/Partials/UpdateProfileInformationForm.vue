@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import PhoneInput from '@/Components/PhoneInput.vue';
 
 defineProps<{
     mustVerifyEmail?: Boolean;
@@ -15,12 +16,13 @@ const user = usePage().props.auth.user;
 const form = useForm({
     name: user.name,
     email: user.email,
+    phone_number: user.phone_number,
 });
 </script>
 
 <template>
     <section>
-        <header>
+      <header>
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 Profile Information
             </h2>
@@ -63,6 +65,22 @@ const form = useForm({
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <div>
+                <InputLabel for="phone_number" value="Phone Number" />
+<!--                <PhoneInput id="phone_number" v-model="form.phone_number" />-->
+
+                <TextInput
+                  id="phone_number"
+                  type="text"
+                  class="mt-1 block w-full"
+                  v-model="form.phone_number"
+                  placeholder="+1 000-000-0000"
+                  autocomplete="phone_number"
+                />
+
+                <InputError class="mt-2" :message="form.errors.phone_number" />
             </div>
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">

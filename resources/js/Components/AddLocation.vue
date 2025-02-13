@@ -6,6 +6,10 @@ import axios from 'axios';
 import { computed, ref, watch } from 'vue';
 
 const newLocation = ref('');
+const suggestions = ref([]);
+const showDropdown = ref(false);
+const coordinates = ref({ lat: null, lon: null });
+let debounceTimeout = null;
 
 const canAddLocation = computed(() => {
   return !newLocation.value || newLocation.value.length < 3;
@@ -13,15 +17,15 @@ const canAddLocation = computed(() => {
 
 const handleAddNewLocation = () => {
   axios
-    .post(route('locations.store'), { name: newLocation.value })
+    .post(route('locations.store'), {
+      name: newLocation.value,
+      coordinates: coordinates.value,
+    })
     .then((response) => {
       newLocation.value = '';
       router.reload({ only: ['locations'] });
     });
 };
-
-const suggestions = ref([]);
-const showDropdown = ref(false);
 
 const fetchTowns = async (query) => {
   if (!query) {
@@ -35,30 +39,41 @@ const fetchTowns = async (query) => {
     );
     const data = await response.json();
 
-    suggestions.value = data.map((place) => place.display_name).slice(0, 5);
+    suggestions.value = data
+      .map((place) => ({
+        name: place.display_name,
+        lat: place.lat,
+        lon: place.lon,
+      }))
+      .slice(0, 5);
   } catch (error) {
     console.error('Error fetching town names:', error);
   }
 };
 
 watch(newLocation, (newVal) => {
-  if (newVal.length > 2) {
-    fetchTowns(newVal);
-    showDropdown.value = true;
-  } else {
-    suggestions.value = [];
-    showDropdown.value = false;
-  }
+  clearTimeout(debounceTimeout);
+
+  debounceTimeout = setTimeout(() => {
+    if (newVal.length > 2) {
+      fetchTowns(newVal);
+      showDropdown.value = true;
+    } else {
+      suggestions.value = [];
+      showDropdown.value = false;
+    }
+  }, 400);
 });
 
 const closeDropdown = () => {
   setTimeout(() => {
     showDropdown.value = false;
-  }, 200);
+  }, 500);
 };
 
 const selectTown = (town) => {
-  newLocation.value = town;
+  newLocation.value = town.name;
+  coordinates.value = { lat: town.lat, lon: town.lon };
   showDropdown.value = false;
 };
 </script>
@@ -85,7 +100,7 @@ const selectTown = (town) => {
         @click="selectTown(town)"
         class="cursor-pointer p-2 hover:bg-gray-700"
       >
-        {{ town }}
+        {{ town.name }}
       </li>
     </ul>
   </div>

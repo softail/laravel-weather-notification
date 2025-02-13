@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
+    if (auth()->id()) {
+        return redirect()->route('dashboard');
+    }
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -26,4 +30,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

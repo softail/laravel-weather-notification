@@ -26,7 +26,7 @@ provide('notificationTypes', props.notificationTypes);
     </template>
 
     <div class="py-12">
-      <div class="mx-auto max-w-7xl max-w-[800px] sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl max-w-[900px] sm:px-6 lg:px-8">
         <div class="bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
           <div
             class="flex flex-col justify-center p-6 text-gray-900 dark:text-gray-100"
@@ -40,6 +40,7 @@ provide('notificationTypes', props.notificationTypes);
             </div>
 
             <hr
+              v-if="locations.length > 0"
               class="my-4 h-0.5 rounded-full border-0 bg-gradient-to-r from-gray-800 via-gray-50 to-gray-800"
             />
 

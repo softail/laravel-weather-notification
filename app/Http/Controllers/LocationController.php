@@ -16,7 +16,8 @@ class LocationController extends Controller
     {
         Location::query()->create([
             'user_id' => auth()->id(),
-            'name' => $request->name,
+            'name' => $request->validated('name'),
+            'coordinates' => $request->validated('coordinates'),
             'notify_by' => [],
         ]);
 
@@ -35,7 +36,7 @@ class LocationController extends Controller
         try {
             $location->delete();
         } catch (\Exception $e) {
-            return back(Response::HTTP_INTERNAL_SERVER_ERROR)->withErrors('Error deleting location: ' . $e->getMessage());
+            return back(Response::HTTP_INTERNAL_SERVER_ERROR)->withErrors('Error deleting location: '.$e->getMessage());
         }
 
         return Redirect::route('dashboard');

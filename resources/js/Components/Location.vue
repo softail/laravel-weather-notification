@@ -25,7 +25,7 @@ const form = useForm({
       }
     });
 
-    return items
+    return items;
   }),
 });
 
@@ -74,8 +74,29 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="relative mt-2 flex flex-row justify-between">
-    <div class="w-full text-2xl dark:text-gray-300">{{ location.name }}</div>
+  <div class="relative mt-2 flex flex-row items-center justify-between">
+    <div
+      class="flex w-full items-center justify-between text-2xl dark:text-gray-300"
+    >
+      <span class="w-full">{{ location.name }}</span>
+
+      <span class="px-2">&bull;</span>
+
+      <span
+        class="w-24 text-end"
+        :class="{
+          'text-blue-600': location.current_temperature < -25,
+          'text-blue-300': location.current_temperature < -10,
+          'text-blue-200': location.current_temperature < 0,
+          'text-white': location.current_temperature === 0,
+          'text-orange-200': location.current_temperature > 0,
+          'text-orange-300': location.current_temperature > 10,
+          'text-orange-600': location.current_temperature > 25,
+        }"
+      >
+        {{ location.current_temperature }}°C
+      </span>
+    </div>
 
     <button
       @click="showSettings = !showSettings"
@@ -124,7 +145,7 @@ onBeforeUnmount(() => {
   <Modal :show="confirmingLocationDeletion" @close="closeModal">
     <div class="p-6">
       <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-        Are you sure you want to delete your account?
+        Are you sure you want to delete {{ location.name }}?
       </h2>
 
       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
