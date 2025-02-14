@@ -40,7 +40,7 @@ class User extends Authenticatable
     protected function phoneNumber(): Attribute
     {
         return Attribute::make(
-            set: fn (string $value) => str($value)->replace([' ', '-'], ['', ''])->value(),
+            set: fn (?string $value) => $value ? str($value)->replace([' ', '-'], ['', ''])->value() : null,
         );
     }
 
