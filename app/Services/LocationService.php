@@ -34,7 +34,7 @@ class LocationService
 
     public function getUserLocations(): Collection
     {
-        return auth()->user()?->locations->map(function ($location) {
+        return auth()->user()?->locations()->oldest()->get()->map(function ($location) {
             return [
                 ...$location->toArray(),
                 'current_temperature' => $this->weatherService->getCurrentTemperature($location->coordinates),
