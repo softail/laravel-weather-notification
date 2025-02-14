@@ -21,17 +21,21 @@ class NotifyUserAboutWeather extends Notification implements ShouldQueue
      */
     public function __construct(private readonly Location $location, bool $dangerousUVIndex, bool $highPrecipitation)
     {
-        $this->message = '';
+        $alerts = [];
 
-        if ($dangerousUVIndex && $highPrecipitation) {
-            $this->message .= 'High precipitation and dangerous UV rays';
-        } elseif ($dangerousUVIndex) {
-            $this->message .= 'Dangerous UV rays';
-        } elseif ($highPrecipitation) {
-            $this->message .= 'High precipitation';
+        if ($highPrecipitation) {
+            $alerts[] = 'high precipitation';
         }
 
-        $this->message .= " expected today in {$this->location->name}, stay safe!";
+        if ($dangerousUVIndex) {
+            $alerts[] = 'dangerous UV rays';
+        }
+
+        if (!empty($alerts)) {
+            $this->message = ucfirst(implode(' and ', $alerts) . " expected today in {$this->location->name}, stay safe!");
+        } else {
+            $this->message = "No severe weather conditions expected today in {$this->location->name}.";
+        }
     }
 
     /**
