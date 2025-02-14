@@ -39,6 +39,25 @@ it('can store a new location', function () {
         );
 });
 
+it('can show location', function () {
+    $location = Location::factory()->create();
+
+    $response = $this
+        ->actingAs($location->user)
+        ->get(route('locations.show', $location->id));
+
+    $response->assertSessionHasNoErrors();
+
+    $this->actingAs($location->user)
+        ->get(route('locations.show', $location->id))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Location/Show')
+            ->has('location')
+            ->where('location.name', $location->name)
+            ->has('location.notify_by')
+        );
+});
+
 it('can update location', function () {
     $notificationsBy = getEnumCases(NotificationTypesEnum::cases());
     $requestData = [

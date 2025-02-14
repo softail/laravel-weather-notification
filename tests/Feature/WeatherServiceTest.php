@@ -1,10 +1,8 @@
 <?php
 
 use App\Contracts\WeatherInterface;
-use App\Services\OpenMeteoWeatherService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 
 beforeEach(function () {
