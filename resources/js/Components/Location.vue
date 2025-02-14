@@ -3,12 +3,14 @@ import DangerButton from '@/Components/DangerButton.vue';
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Toggle from '@/Components/Toggle.vue';
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue';
 
 const props = defineProps({
   location: Object,
 });
+
+const emit = defineEmits(['success']);
 
 const notificationTypes = inject('notificationTypes');
 
@@ -46,6 +48,7 @@ const deleteLocation = () => {
     onSuccess: () => closeModal(),
     onError: () => alert('Error deleting location!'),
     onFinish: () => {
+      emit('success');
       showSettings.value = false;
     },
   });
@@ -56,7 +59,9 @@ const updateLocation = () => {
     preserveScroll: true,
     onSuccess: () => (showSettings.value = false),
     onError: () => alert('Error updating location!'),
-    onFinish: () => {},
+    onFinish: () => {
+      emit('success');
+    },
   });
 };
 
@@ -74,40 +79,41 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="relative mt-2 flex flex-row items-center justify-between">
-    <div
-      class="flex w-full items-center justify-between text-2xl dark:text-gray-300"
-    >
-      <span class="w-full">{{ location.name }}</span>
-
-      <span class="px-2">&bull;</span>
-
-      <span
-        class="w-24 text-end"
-        :class="{
-          'text-blue-600': location.current_temperature < -25,
-          'text-blue-300': location.current_temperature < -10,
-          'text-blue-200': location.current_temperature < 0,
-          'text-white': location.current_temperature === 0,
-          'text-orange-200': location.current_temperature > 0,
-          'text-orange-300': location.current_temperature > 10,
-          'text-orange-600': location.current_temperature > 25,
-        }"
+  <div class="relative flex flex-row items-center justify-between">
+      <Link
+        :href="route('locations.show', location.id)"
+        class="flex w-full items-center px-3 py-2 rounded justify-between lg:text-xl xl:text-2xl dark:text-gray-300 hover:bg-gray-100 hover:dark:bg-gray-500"
       >
-        {{ location.current_temperature }}°C
-      </span>
-    </div>
+        <span class="w-full">{{ location.name }}</span>
+
+        <span class="px-2">&bull;</span>
+
+        <span
+          class="w-24 text-end drop-shadow-sm"
+          :class="{
+            'text-blue-600': location.current_temperature < -25,
+            'text-blue-300': location.current_temperature < -10,
+            'text-blue-200': location.current_temperature < 0,
+            'text-white': location.current_temperature === 0,
+            'text-orange-200': location.current_temperature > 0,
+            'text-orange-300': location.current_temperature > 10,
+            'text-orange-600': location.current_temperature > 25,
+          }"
+        >
+          {{ location.current_temperature }}°C
+        </span>
+      </Link>
 
     <button
       @click="showSettings = !showSettings"
-      class="settings-button ml-4 flex h-12 w-16 items-center justify-center rounded-md bg-gray-800 p-0 text-3xl transition hover:bg-gray-500"
+      class="settings-button flex h-12 w-16 items-center justify-center rounded-md bg-white p-0 text-3xl transition hover:bg-gray-100 dark:bg-gray-800 hover:dark:bg-gray-500"
     >
       &middot; &middot; &middot;
     </button>
 
     <div
       v-show="showSettings"
-      class="settings absolute right-0 top-[105%] z-[10] rounded-md bg-gray-500 p-4 text-lg shadow-lg transition"
+      class="settings absolute right-0 top-[105%] z-[10] rounded-md bg-gray-50 p-4 text-lg shadow-lg transition dark:bg-gray-500"
     >
       <div>
         <h3>Notify By</h3>
@@ -127,14 +133,14 @@ onBeforeUnmount(() => {
       <div class="flex justify-between space-x-4">
         <button
           @click="updateLocation"
-          class="w-full rounded-md bg-green-800 px-3 py-1 transition hover:bg-green-500"
+          class="w-full rounded-md px-3 py-1 shadow-md transition bg-green-400 text-white dark:bg-green-700 hover:bg-green-500"
         >
           Save
         </button>
 
         <button
           @click="confirmingLocationDeletion = true"
-          class="w-full rounded-md bg-red-800 px-3 py-1 transition hover:bg-red-500"
+          class="w-full rounded-md px-3 py-1 shadow-md transition bg-red-400 text-white dark:bg-red-700 hover:bg-red-500"
         >
           Delete
         </button>

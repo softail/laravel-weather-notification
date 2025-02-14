@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\NotificationTypesEnum;
 use App\Services\LocationService;
+use Database\Factories\LocationFactory;
 use Inertia\Inertia;
 use Inertia\Response;
 

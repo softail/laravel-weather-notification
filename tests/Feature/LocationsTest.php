@@ -14,8 +14,8 @@ it('can store a new location', function () {
     $requestData = [
         'name' => 'Test Location',
         'coordinates' => [
-            'lat' => Faker\Provider\ar_SA\Address::latitude(),
-            'lon' => Faker\Provider\ar_SA\Address::longitude(),
+            'lat' => fake()->latitude(),
+            'lon' => fake()->longitude(),
         ],
     ];
 

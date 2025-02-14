@@ -32,26 +32,20 @@ class OpenMeteoWeatherService implements WeatherInterface
         return null;
     }
 
-    public function getWeatherForecast(array $coordinates): ?array
+    public function getWeatherForecast(array $coordinates, array $options = []): ?array
     {
         $requestData = [
             'latitude' => $coordinates['lat'],
             'longitude' => $coordinates['lon'],
             'current' => 'temperature_2m',
             'timezone' => 'auto',
-            'forecast_days' => 1,
-            'daily' => 'uv_index_max,precipitation_sum',
+            ...$options,
         ];
 
         try {
-            $response = cache()->remember($coordinates['lat'].'-'.$coordinates['lon'], 0, function () use ($requestData) {
-                return Http::get(self::API_URL, $requestData)->body();
-            });
+            $response = Http::get(self::API_URL, $requestData)->body();
 
-            return [
-                data_get(json_decode($response, true), 'daily.uv_index_max.0'),
-                data_get(json_decode($response, true), 'daily.precipitation_sum.0'),
-            ];
+            return json_decode($response, true);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }

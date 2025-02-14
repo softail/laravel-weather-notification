@@ -123,4 +123,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'notify_at' => env('NOTIFY_AT', '08:00'),
 ];

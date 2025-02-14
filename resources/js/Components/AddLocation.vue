@@ -15,6 +15,8 @@ const canAddLocation = computed(() => {
   return !newLocation.value || newLocation.value.length < 3;
 });
 
+const emit = defineEmits(['success']);
+
 const handleAddNewLocation = () => {
   axios
     .post(route('locations.store'), {
@@ -22,6 +24,7 @@ const handleAddNewLocation = () => {
       coordinates: coordinates.value,
     })
     .then((response) => {
+      emit('success');
       newLocation.value = '';
       router.reload({ only: ['locations'] });
     });
@@ -109,7 +112,7 @@ const selectTown = (town) => {
     <button
       :disabled="canAddLocation"
       @click="handleAddNewLocation"
-      class="right inline-block max-w-[180px] rounded-md bg-green-700 px-4 py-2 text-lg text-white transition hover:bg-green-500 disabled:bg-gray-500"
+      class="right inline-block max-w-[180px] rounded-md bg-green-400 px-4 py-2 text-lg text-white transition hover:bg-green-500 disabled:bg-gray-500 dark:bg-green-700"
     >
       Add
     </button>

@@ -25,9 +25,13 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/locations/store', [LocationController::class, 'store'])->name('locations.store');
-    Route::patch('/locations/{location}', [LocationController::class, 'update'])->name('locations.update');
-    Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
+
+    Route::controller(LocationController::class)->group(function () {
+        Route::post('/locations', 'store')->name('locations.store');
+        Route::get('/locations/{location}', 'show')->name('locations.show');
+        Route::patch('/locations/{location}', 'update')->name('locations.update');
+        Route::delete('/locations/{location}', 'destroy')->name('locations.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

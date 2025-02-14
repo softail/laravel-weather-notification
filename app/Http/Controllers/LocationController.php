@@ -6,22 +6,25 @@ use App\Http\Requests\DeleteLocationRequest;
 use App\Http\Requests\StoreLocationRequest;
 use App\Http\Requests\UpdateLocationRequest;
 use App\Models\Location;
+use App\Services\LocationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpFoundation\Response;
 
 class LocationController extends Controller
 {
+    public function __construct(private readonly LocationService $locationService) {}
+
     public function store(StoreLocationRequest $request): RedirectResponse
     {
-        Location::query()->create([
-            'user_id' => auth()->id(),
-            'name' => $request->validated('name'),
-            'coordinates' => $request->validated('coordinates'),
-            'notify_by' => [],
-        ]);
+        $this->locationService->handleStore($request->validated());
 
         return Redirect::route('dashboard');
+    }
+
+    public function show(Location $location): \Inertia\Response
+    {
+        return $this->locationService->handleShow($location);
     }
 
     public function update(UpdateLocationRequest $request, Location $location): RedirectResponse
