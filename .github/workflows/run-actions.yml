@@ -64,7 +64,7 @@ jobs:
         run: npm install
 
       - name: Run build (npm)
-        run: npm run dev
+        run: npm run build
 
       - name: Run Tests
         run: ./vendor/bin/pest
