@@ -39,6 +39,30 @@ it('can store a new location', function () {
         );
 });
 
+it('can not store an existing location', function () {
+    $requestData = [
+        'name' => 'Test Location',
+        'coordinates' => [
+            'lat' => fake()->latitude(),
+            'lon' => fake()->longitude(),
+        ],
+    ];
+
+    $response = $this
+        ->actingAs($this->user)
+        ->post(route('locations.store'), $requestData);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('dashboard'));
+
+    $response = $this
+        ->actingAs($this->user)
+        ->post(route('locations.store'), $requestData);
+
+    $response->assertSessionHasErrors(['name' => 'This location is already added.']);
+});
+
 it('can show location', function () {
     $location = Location::factory()->create();
 

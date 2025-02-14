@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { router } from '@inertiajs/vue3';
@@ -17,6 +18,7 @@ interface Suggestion {
 }
 
 const newLocation = ref<string>('');
+const errorMessage = ref<string>('');
 const suggestions = ref<Suggestion[]>([]);
 const showDropdown = ref<boolean>(false);
 const coordinates = ref<Coordinates>({ lat: null, lon: null });
@@ -38,6 +40,9 @@ const handleAddNewLocation = () => {
       emit('success');
       newLocation.value = '';
       router.reload({ only: ['locations'] });
+    })
+    .catch((error) => {
+      errorMessage.value = error.response.data.message;
     });
 };
 
@@ -67,6 +72,8 @@ const fetchTowns = async (query: string) => {
 
 watch(newLocation, (newVal) => {
   clearTimeout(debounceTimeout);
+
+  errorMessage.value = '';
 
   debounceTimeout = setTimeout(() => {
     if (newVal.length > 2) {
@@ -103,6 +110,8 @@ const selectTown = (town: Suggestion) => {
       @blur="closeDropdown"
       class="w-full rounded-md border text-lg text-black"
     />
+
+    <InputError :message="errorMessage" />
 
     <ul
       v-if="showDropdown && suggestions.length"
