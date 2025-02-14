@@ -4,6 +4,7 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    phone_number: any;
     email_verified_at?: string;
 }
 

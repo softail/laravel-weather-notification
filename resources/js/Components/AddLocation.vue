@@ -5,11 +5,22 @@ import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, ref, watch } from 'vue';
 
-const newLocation = ref('');
-const suggestions = ref([]);
-const showDropdown = ref(false);
-const coordinates = ref({ lat: null, lon: null });
-let debounceTimeout = null;
+interface Coordinates {
+  lat: number | null;
+  lon: number | null;
+}
+
+interface Suggestion {
+  name: string;
+  lat: string;
+  lon: string;
+}
+
+const newLocation = ref<string>('');
+const suggestions = ref<Suggestion[]>([]);
+const showDropdown = ref<boolean>(false);
+const coordinates = ref<Coordinates>({ lat: null, lon: null });
+let debounceTimeout: ReturnType<typeof setTimeout> | undefined;
 
 const canAddLocation = computed(() => {
   return !newLocation.value || newLocation.value.length < 3;
@@ -30,7 +41,7 @@ const handleAddNewLocation = () => {
     });
 };
 
-const fetchTowns = async (query) => {
+const fetchTowns = async (query: string) => {
   if (!query) {
     suggestions.value = [];
     return;
@@ -43,7 +54,7 @@ const fetchTowns = async (query) => {
     const data = await response.json();
 
     suggestions.value = data
-      .map((place) => ({
+      .map((place: { display_name: string; lat: string; lon: string }) => ({
         name: place.display_name,
         lat: place.lat,
         lon: place.lon,
@@ -74,9 +85,9 @@ const closeDropdown = () => {
   }, 500);
 };
 
-const selectTown = (town) => {
+const selectTown = (town: Suggestion) => {
   newLocation.value = town.name;
-  coordinates.value = { lat: town.lat, lon: town.lon };
+  coordinates.value = { lat: parseFloat(town.lat), lon: parseFloat(town.lon) };
   showDropdown.value = false;
 };
 </script>
@@ -95,13 +106,13 @@ const selectTown = (town) => {
 
     <ul
       v-if="showDropdown && suggestions.length"
-      class="absolute mt-2 w-full rounded-md bg-gray-600 text-gray-700 opacity-95 dark:text-gray-300"
+      class="absolute mt-2 w-full rounded-md bg-gray-200 dark:bg-gray-600 text-gray-700 opacity-95 dark:text-gray-300"
     >
       <li
         v-for="(town, index) in suggestions"
         :key="index"
         @click="selectTown(town)"
-        class="cursor-pointer p-2 hover:bg-gray-700"
+        class="cursor-pointer p-2 hover:bg-gray-300 hover:dark:bg-gray-700"
       >
         {{ town.name }}
       </li>

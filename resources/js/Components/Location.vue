@@ -6,38 +6,48 @@ import Toggle from '@/Components/Toggle.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue';
 
-const props = defineProps({
-  location: Object,
+interface Location {
+  id: number;
+  name: string;
+  notify_by: string[];
+  current_temperature: number;
+}
+
+const props = defineProps<{ location: Location }>();
+
+const emit = defineEmits<{
+  (e: 'success'): void;
+}>();
+
+const notificationTypes = inject<string[]>('notificationTypes', []);
+const notifyBy = computed(() => {
+  let items: any[] = [];
+
+  notificationTypes.forEach((item) => {
+    if (props.location.notify_by.includes(item)) {
+      items.push(item);
+    } else {
+      items.push(null);
+    }
+  });
+
+  return items;
 });
-
-const emit = defineEmits(['success']);
-
-const notificationTypes = inject('notificationTypes');
 
 const form = useForm({
   location: props.location.id,
-  notify_by: computed(() => {
-    let items = [];
-
-    notificationTypes.forEach((item) => {
-      if (props.location.notify_by.includes(item)) {
-        items.push(item);
-      } else {
-        items.push(null);
-      }
-    });
-
-    return items;
-  }),
+  notify_by: notifyBy.value
 });
 
 const showSettings = ref(false);
 const confirmingLocationDeletion = ref(false);
 
-const handleClickOutside = (event) => {
-  const settings = event.target.closest('.settings');
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement | null;
+  if (!target) return;
 
-  if (!settings && !event.target.classList.contains('settings-button')) {
+  const settings = target.closest('.settings');
+  if (!settings && !target.classList.contains('settings-button')) {
     showSettings.value = false;
   }
 };
@@ -45,7 +55,7 @@ const handleClickOutside = (event) => {
 const deleteLocation = () => {
   form.delete(route('locations.destroy', props.location.id), {
     preserveScroll: true,
-    onSuccess: () => closeModal(),
+    onSuccess: closeModal,
     onError: () => alert('Error deleting location!'),
     onFinish: () => {
       emit('success');
@@ -80,29 +90,29 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="relative flex flex-row items-center justify-between">
-      <Link
-        :href="route('locations.show', location.id)"
-        class="flex w-full items-center px-3 py-2 rounded justify-between lg:text-xl xl:text-2xl dark:text-gray-300 hover:bg-gray-100 hover:dark:bg-gray-500"
+    <Link
+      :href="route('locations.show', location.id)"
+      class="flex w-full items-center justify-between rounded px-3 py-2 hover:bg-gray-100 lg:text-xl xl:text-2xl dark:text-gray-300 hover:dark:bg-gray-500"
+    >
+      <span class="w-full">{{ location.name }}</span>
+
+      <span class="px-2">&bull;</span>
+
+      <span
+        class="w-24 text-end drop-shadow-sm"
+        :class="{
+          'text-blue-600': location.current_temperature < -25,
+          'text-blue-300': location.current_temperature < -10,
+          'text-blue-200': location.current_temperature < 0,
+          'text-white': location.current_temperature === 0,
+          'text-orange-200': location.current_temperature > 0,
+          'text-orange-300': location.current_temperature > 10,
+          'text-orange-600': location.current_temperature > 25,
+        }"
       >
-        <span class="w-full">{{ location.name }}</span>
-
-        <span class="px-2">&bull;</span>
-
-        <span
-          class="w-24 text-end drop-shadow-sm"
-          :class="{
-            'text-blue-600': location.current_temperature < -25,
-            'text-blue-300': location.current_temperature < -10,
-            'text-blue-200': location.current_temperature < 0,
-            'text-white': location.current_temperature === 0,
-            'text-orange-200': location.current_temperature > 0,
-            'text-orange-300': location.current_temperature > 10,
-            'text-orange-600': location.current_temperature > 25,
-          }"
-        >
-          {{ location.current_temperature }}°C
-        </span>
-      </Link>
+        {{ location.current_temperature }}°C
+      </span>
+    </Link>
 
     <button
       @click="showSettings = !showSettings"
@@ -133,14 +143,14 @@ onBeforeUnmount(() => {
       <div class="flex justify-between space-x-4">
         <button
           @click="updateLocation"
-          class="w-full rounded-md px-3 py-1 shadow-md transition bg-green-400 text-white dark:bg-green-700 hover:bg-green-500"
+          class="w-full rounded-md bg-green-400 px-3 py-1 text-white shadow-md transition hover:bg-green-500 dark:bg-green-700"
         >
           Save
         </button>
 
         <button
           @click="confirmingLocationDeletion = true"
-          class="w-full rounded-md px-3 py-1 shadow-md transition bg-red-400 text-white dark:bg-red-700 hover:bg-red-500"
+          class="w-full rounded-md bg-red-400 px-3 py-1 text-white shadow-md transition hover:bg-red-500 dark:bg-red-700"
         >
           Delete
         </button>

@@ -16,14 +16,14 @@ const tabOptions = ['Today', 'Hourly', 'Daily'];
 </script>
 
 <template>
-  <Head :title="location.name" />
+  <Head :title="location?.name" />
 
   <AuthenticatedLayout>
     <template #header>
       <h2
         class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
       >
-        {{ location.name }}
+        {{ location?.name }}
       </h2>
     </template>
 

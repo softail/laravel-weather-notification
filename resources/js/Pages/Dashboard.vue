@@ -47,7 +47,7 @@ provide('notificationTypes', props.notificationTypes);
             </div>
 
             <hr
-              v-if="locations.length > 0"
+              v-if="locations?.length > 0"
               class="my-4 h-0.5 rounded-full border-0 bg-gradient-to-r from-white via-gray-800 to-white dark:from-gray-800 dark:via-gray-50 dark:to-gray-800"
             />
 

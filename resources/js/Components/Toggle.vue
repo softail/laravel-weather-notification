@@ -19,7 +19,7 @@ const onChange = (event: Event) => {
   if (checkbox.checked) {
     emit('update:modelValue', model);
   } else {
-    emit('update:modelValue', null);
+    emit('update:modelValue', '');
   }
 };
 </script>

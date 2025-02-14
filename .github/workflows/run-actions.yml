@@ -1,13 +1,13 @@
-name: Run Actions
+name: Laravel CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
 
 jobs:
-  laravel-tests:
+  test:
     runs-on: ubuntu-latest
 
     services:
@@ -19,35 +19,52 @@ jobs:
           MYSQL_USER: root
           MYSQL_PASSWORD: password
         ports:
-          - 3307:3306
+          - 3306:3306
         options: --health-cmd="mysqladmin ping -uroot -ppassword" --health-interval=10s --health-timeout=5s --health-retries=10
 
     env:
       DB_CONNECTION: mysql
-      DB_HOST: mysql
+      DB_HOST: 127.0.0.1
       DB_PORT: 3306
       DB_DATABASE: testing
       DB_USERNAME: root
       DB_PASSWORD: password
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
-      - name: Install Dependencies
-        run: |
-          curl -sS https://getcomposer.org/installer | php -- --version=2.7.6
-          sudo mv composer.phar /usr/local/bin/composer
-          composer install --no-interaction --prefer-dist
+          php-version: '8.2'
+          extensions: mbstring, pdo, redis, bcmath
+          tools: composer
+
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer Dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-      - name: Start Sail
-        run: |
-          ./vendor/bin/sail up -d
-      - name: Set Up Database
-        run: |
-          ./vendor/bin/sail artisan migrate --seed
-      - name: Execute tests
-        run: |
-          ./vendor/bin/sail test
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Run Migrations
+        run: php artisan migrate --force
+
+      - name: Install Node Dependencies
+        run: npm install
+
+      - name: Run build (npm)
+        run: npm run dev
+
+      - name: Run Tests
+        run: ./vendor/bin/pest
