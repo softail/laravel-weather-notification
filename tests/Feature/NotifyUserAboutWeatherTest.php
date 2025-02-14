@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Notification;
 beforeEach(function () {
     $this->notifyBy = getEnumCases(NotificationTypesEnum::cases());
     Notification::fake();
-
 });
 
 it('creates a notification message correctly when both conditions are true', function () {

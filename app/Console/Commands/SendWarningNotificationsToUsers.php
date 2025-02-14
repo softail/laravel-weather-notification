@@ -52,7 +52,6 @@ class SendWarningNotificationsToUsers extends Command
             $isHighPrecipitation = $precipitationSum > self::DANGER_PRECIPITATION;
 
             if ($isHighUV || $isHighPrecipitation) {
-                $this->info('Sending notification about '.$location->name.' using: '.implode(',', $location->notify_by));
                 $location->user->notify(new NotifyUserAboutWeather($location, $isHighUV, $isHighPrecipitation));
             }
         }

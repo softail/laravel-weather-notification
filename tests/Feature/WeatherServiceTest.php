@@ -4,7 +4,6 @@ use App\Contracts\WeatherInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
-
 beforeEach(function () {
     $this->weatherService = app(WeatherInterface::class);
 });

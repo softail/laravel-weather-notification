@@ -8,9 +8,9 @@ use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
 
-readonly class LocationService
+class LocationService
 {
-    public function __construct(private WeatherInterface $weatherService) {}
+    public function __construct(private readonly WeatherInterface $weatherService) {}
 
     public function handleStore(array $data): void
     {
