@@ -78,7 +78,7 @@ it('formats the mail notification correctly', function () {
     $mailMessage = $notification->toMail($location->user);
 
     expect($mailMessage)->toBeInstanceOf(MailMessage::class)
-        ->and($mailMessage->greeting)->toBe('Good morning ' . $location->user->name)
+        ->and($mailMessage->greeting)->toBe('Good morning '.$location->user->name)
         ->and($mailMessage->introLines)->toContain('High precipitation expected today in New York, stay safe!');
 });
 
@@ -93,7 +93,7 @@ it('formats the SMS notification correctly', function () {
     $vonageMessage = $notification->toVonage($location->user);
 
     expect($vonageMessage)->toBeInstanceOf(VonageMessage::class)
-        ->and($vonageMessage->content)->toBe('Good morning ' . $location->user->name . ' Dangerous UV rays expected today in New York, stay safe!');
+        ->and($vonageMessage->content)->toBe('Good morning '.$location->user->name.' Dangerous UV rays expected today in New York, stay safe!');
 });
 
 it('creates a notification with empty message when no conditions are true', function () {

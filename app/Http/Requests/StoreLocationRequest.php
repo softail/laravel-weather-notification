@@ -26,7 +26,7 @@ class StoreLocationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:255', Rule::unique('locations')
-                ->where(function ($query)  {
+                ->where(function ($query) {
                     return $query->where('user_id', auth()->id());
                 }),
             ],

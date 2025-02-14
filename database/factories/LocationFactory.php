@@ -23,7 +23,7 @@ class LocationFactory extends Factory
                 'lat' => fake()->latitude(),
                 'lon' => fake()->longitude(),
             ],
-            'notify_by' => []
+            'notify_by' => [],
         ];
     }
 }

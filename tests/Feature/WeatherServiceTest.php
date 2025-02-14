@@ -1,8 +1,8 @@
 <?php
 
 use App\Contracts\WeatherInterface;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
     $this->weatherService = app(WeatherInterface::class);
@@ -20,8 +20,9 @@ it('can retrieve the current temperature', function () {
 
     Cache::shouldReceive('remember')
         ->once()
-        ->with("40.7128--74.006", \Mockery::type('DateTime'), \Mockery::on(function ($callback) {
+        ->with('40.7128--74.006', \Mockery::type('DateTime'), \Mockery::on(function ($callback) {
             $responseMock = Http::get('mocked-url');
+
             return is_callable($callback) && $responseMock;
         }))
         ->andReturn(json_encode($apiResponse));
@@ -30,7 +31,6 @@ it('can retrieve the current temperature', function () {
 
     expect($temperature)->toBe(25.5);
 });
-
 
 it('can retrieve the weather forecast', function () {
     $coordinates = ['lat' => 40.7128, 'lon' => -74.0060];

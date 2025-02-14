@@ -85,7 +85,7 @@ it('can show location', function () {
 it('can update location', function () {
     $notificationsBy = getEnumCases(NotificationTypesEnum::cases());
     $requestData = [
-        'notify_by' => $notificationsBy
+        'notify_by' => $notificationsBy,
     ];
 
     $location = Location::factory()->create();

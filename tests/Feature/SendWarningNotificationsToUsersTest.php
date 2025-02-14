@@ -6,8 +6,8 @@ use App\Enums\NotificationTypesEnum;
 use App\Models\Location;
 use App\Notifications\NotifyUserAboutWeather;
 use App\Services\LocationService;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Notification;
 
 const SAFE_UV_INDEX = 5;
 const DANGEROUS_UV_INDEX = 8;
@@ -45,7 +45,7 @@ it('sends a weather warning notification when conditions are dangerous', functio
             'daily' => [
                 'uv_index_max' => [DANGEROUS_UV_INDEX],
                 'precipitation_sum' => [DANGEROUS_PRECIPITATION],
-            ]
+            ],
         ]);
 
     $this->command->handle();
@@ -76,7 +76,7 @@ it('does not send a notification when conditions are safe', function () {
             'daily' => [
                 'uv_index_max' => [SAFE_UV_INDEX],
                 'precipitation_sum' => [SAFE_PRECIPITATION],
-            ]
+            ],
         ]);
 
     $this->command->handle();

@@ -31,8 +31,8 @@ class NotifyUserAboutWeather extends Notification implements ShouldQueue
             $alerts[] = 'dangerous UV rays';
         }
 
-        if (!empty($alerts)) {
-            $this->message = ucfirst(implode(' and ', $alerts) . " expected today in {$this->location->name}, stay safe!");
+        if (! empty($alerts)) {
+            $this->message = ucfirst(implode(' and ', $alerts)." expected today in {$this->location->name}, stay safe!");
         } else {
             $this->message = "No severe weather conditions expected today in {$this->location->name}.";
         }
