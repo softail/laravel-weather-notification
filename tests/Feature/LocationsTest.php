@@ -66,3 +66,24 @@ it('can update location', function () {
             ->where('locations.0.notify_by', $notificationsBy)
         );
 });
+
+it('can delete location', function () {
+    $location = Location::factory()->create();
+
+    $response = $this
+        ->actingAs($location->user)
+        ->delete(route('locations.destroy', $location->id));
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('dashboard'));
+
+    $this->assertDatabaseMissing('locations', []);
+
+    $this->actingAs($location->user)
+        ->get('/dashboard')
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Dashboard')
+            ->has('locations', 0)
+        );
+});
