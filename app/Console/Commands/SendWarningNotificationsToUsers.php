@@ -40,20 +40,24 @@ class SendWarningNotificationsToUsers extends Command
     public function handle(): void
     {
         foreach ($this->locationService->getLocationsWithNotifications() as $location) {
-            $forecast = $this->weatherService->getWeatherForecast($location->coordinates, [
-                'forecast_days' => 1,
-                'daily' => 'uv_index_max,precipitation_sum',
-            ]);
+            $forecast = $this->weatherService->getWeatherForecast($location->coordinates, 1);
 
-            $maxUVIndex = data_get($forecast, 'daily.uv_index_max.0', 0);
-            $precipitationSum = data_get($forecast, 'daily.precipitation_sum.0', 0);
+            $uvIndex = $forecast['uv_index'];
+            $precipitation = $forecast['precipitation'];
 
-            $isHighUV = $maxUVIndex > self::DANGER_UV_INDEX;
-            $isHighPrecipitation = $precipitationSum > self::DANGER_PRECIPITATION;
-
-            if ($isHighUV || $isHighPrecipitation) {
-                $location->user->notify(new NotifyUserAboutWeather($location, $isHighUV, $isHighPrecipitation));
+            if ($this->isDangerousUVIndex($uvIndex) || $this->isHighPrecipitation($precipitation)) {
+                $location->user->notify(new NotifyUserAboutWeather($location, $uvIndex, $precipitation));
             }
         }
+    }
+
+    private function isDangerousUVIndex($uvIndex): bool
+    {
+        return $uvIndex > self::DANGER_UV_INDEX;
+    }
+
+    private function isHighPrecipitation($precipitation): bool
+    {
+        return $precipitation > self::DANGER_PRECIPITATION;
     }
 }

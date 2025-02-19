@@ -37,16 +37,8 @@ it('sends a weather warning notification when conditions are dangerous', functio
 
     $this->weatherService->shouldReceive('getWeatherForecast')
         ->once()
-        ->with($location->coordinates, [
-            'forecast_days' => 1,
-            'daily' => 'uv_index_max,precipitation_sum',
-        ])
-        ->andReturn([
-            'daily' => [
-                'uv_index_max' => [DANGEROUS_UV_INDEX],
-                'precipitation_sum' => [DANGEROUS_PRECIPITATION],
-            ],
-        ]);
+        ->with($location->coordinates, 1)
+        ->andReturn(['uv_index' => DANGEROUS_UV_INDEX, 'precipitation' => DANGEROUS_PRECIPITATION]);
 
     $this->command->handle();
 
@@ -68,16 +60,8 @@ it('does not send a notification when conditions are safe', function () {
 
     $this->weatherService->shouldReceive('getWeatherForecast')
         ->once()
-        ->with($location->coordinates, [
-            'forecast_days' => 1,
-            'daily' => 'uv_index_max,precipitation_sum',
-        ])
-        ->andReturn([
-            'daily' => [
-                'uv_index_max' => [SAFE_UV_INDEX],
-                'precipitation_sum' => [SAFE_PRECIPITATION],
-            ],
-        ]);
+        ->with($location->coordinates, 1)
+        ->andReturn(['uv_index' => SAFE_UV_INDEX, 'precipitation' => SAFE_PRECIPITATION]);
 
     $this->command->handle();
 

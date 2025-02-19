@@ -1,10 +1,13 @@
 <?php
 
 use App\Contracts\WeatherInterface;
+use App\Services\OpenMeteoWeatherService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
+    app()->bind(WeatherInterface::class, OpenMeteoWeatherService::class);
+
     $this->weatherService = app(WeatherInterface::class);
 });
 
@@ -34,10 +37,7 @@ it('can retrieve the current temperature', function () {
 
 it('can retrieve the weather forecast', function () {
     $coordinates = ['lat' => 40.7128, 'lon' => -74.0060];
-    $options = [
-        'forecast_days' => 1,
-        'daily' => 'uv_index_max,precipitation_sum',
-    ];
+    $days = 1;
 
     $apiResponse = [
         'daily' => [
@@ -50,7 +50,8 @@ it('can retrieve the weather forecast', function () {
         '*' => Http::response(json_encode($apiResponse), 200),
     ]);
 
-    $forecast = $this->weatherService->getWeatherForecast($coordinates, $options);
+    $forecastData = $this->weatherService->getWeatherForecast($coordinates, $days);
 
-    expect($forecast)->toEqual($apiResponse);
+    expect($forecastData['uv_index'])->toEqual(data_get($apiResponse, 'daily.uv_index_max.0'))
+        ->and($forecastData['precipitation'])->toEqual(data_get($apiResponse, 'daily.precipitation_sum.0'));
 });

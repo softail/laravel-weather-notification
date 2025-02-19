@@ -76,6 +76,7 @@ it('can show location', function () {
         ->get(route('locations.show', $location->id))
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Location/Show')
+            ->has('forecast')
             ->has('location')
             ->where('location.name', $location->name)
             ->has('location.notify_by')

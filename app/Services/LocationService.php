@@ -24,10 +24,7 @@ class LocationService
 
     public function handleShow(Location $location): Response
     {
-        $forecast = $this->weatherService->getWeatherForecast($location->coordinates, [
-            'forecast_days' => request()->get('days', 1),
-            'current' => 'temperature_2m,precipitation,wind_speed_10m',
-        ]);
+        $forecast = $this->weatherService->getWeatherForecast($location->coordinates, request()->get('days', 1));
 
         return Inertia::render('Location/Show', compact('location', 'forecast'));
     }

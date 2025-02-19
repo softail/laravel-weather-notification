@@ -5,11 +5,11 @@ import { computed } from 'vue';
 
 const props = defineProps({
   location: Object,
-  forecast: Object
+  forecast: Object,
 });
 
-const current_temperature = computed(() => {
-  return props.forecast?.current.temperature_2m;
+const currentTemperature = computed(() => {
+  return props.forecast?.current?.temperature;
 });
 
 const tabOptions = ['Today', 'Hourly', 'Daily'];
@@ -79,16 +79,16 @@ const tabOptions = ['Today', 'Hourly', 'Daily'];
             <span
               class="w-24 text-end drop-shadow-sm"
               :class="{
-                'text-blue-600': current_temperature < -25,
-                'text-blue-300': current_temperature < -10,
-                'text-blue-200': current_temperature < 0,
-                'text-white': current_temperature === 0,
-                'text-orange-200': current_temperature > 0,
-                'text-orange-300': current_temperature > 10,
-                'text-orange-600': current_temperature > 25,
+                'text-blue-600': currentTemperature < -25,
+                'text-blue-300': currentTemperature < -10,
+                'text-blue-200': currentTemperature < 0,
+                'text-white': currentTemperature === 0,
+                'text-orange-200': currentTemperature > 0,
+                'text-orange-300': currentTemperature > 10,
+                'text-orange-600': currentTemperature > 25,
               }"
             >
-              {{ current_temperature }}°C
+              {{ currentTemperature }}°C
             </span>
           </div>
 
@@ -97,7 +97,7 @@ const tabOptions = ['Today', 'Hourly', 'Daily'];
           </div>
 
           <div>
-            Wind speed {{ forecast?.current.wind_speed_10m }} km/h.
+            Wind speed {{ forecast?.current.wind_speed }} km/h.
           </div>
         </div>
       </div>

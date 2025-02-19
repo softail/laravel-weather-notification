@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Contracts\WeatherInterface;
-use App\Services\OpenMeteoWeatherService;
+use App\Services\WeatherService;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(WeatherInterface::class, OpenMeteoWeatherService::class);
+        $this->app->bind(WeatherInterface::class, WeatherService::class);
     }
 
     /**

@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Log;
 
 class OpenMeteoWeatherService implements WeatherInterface
 {
-    private const API_URL = 'https://api.open-meteo.com/v1/forecast';
-
     public function getCurrentTemperature(array $coordinates): ?float
     {
         $requestData = [
@@ -21,7 +19,7 @@ class OpenMeteoWeatherService implements WeatherInterface
 
         try {
             $response = cache()->remember($coordinates['lat'].'-'.$coordinates['lon'], now()->addMinutes(10), function () use ($requestData) {
-                return Http::get(self::API_URL, $requestData)->body();
+                return Http::get(config('weather.open_meteo.url'), $requestData)->body();
             });
 
             return data_get(json_decode($response, true), 'current.temperature_2m');
@@ -32,20 +30,28 @@ class OpenMeteoWeatherService implements WeatherInterface
         return null;
     }
 
-    public function getWeatherForecast(array $coordinates, array $options = []): ?array
+    public function getWeatherForecast(array $coordinates, int $days = 1): ?array
     {
         $requestData = [
             'latitude' => $coordinates['lat'],
             'longitude' => $coordinates['lon'],
-            'current' => 'temperature_2m',
+            'current' => 'temperature_2m,precipitation,wind_speed_10m',
             'timezone' => 'auto',
-            ...$options,
+            'forecast_days' => $days,
         ];
 
         try {
-            $response = Http::get(self::API_URL, $requestData)->body();
+            $response = Http::get(config('weather.open_meteo.url'), $requestData)->body();
 
-            return json_decode($response, true);
+            return [
+                'current' => [
+                    'temperature' => data_get(json_decode($response, true), 'current.temperature_2m'),
+                    'precipitation' => data_get(json_decode($response, true), 'current.precipitation'),
+                    'wind_speed' => data_get(json_decode($response, true), 'current.wind_speed_10m'),
+                ],
+                'uv_index' => data_get(json_decode($response, true), 'daily.uv_index_max.0', 0),
+                'precipitation' => data_get(json_decode($response, true), 'daily.precipitation_sum.0', 0),
+            ];
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
