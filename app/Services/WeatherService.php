@@ -8,9 +8,12 @@ class WeatherService implements WeatherInterface
 {
     private array $services;
 
-    public function __construct(OpenMeteoWeatherService $service1, WeatherAPIService $service2)
-    {
-        $this->services = [$service1, $service2];
+    public function __construct(
+        OpenMeteoWeatherService $service1,
+        WeatherAPIService $service2,
+        WeatherBitService $service3,
+    ) {
+        $this->services = [$service1, $service2, $service3];
     }
 
     public function getCurrentTemperature(array $coordinates): ?float

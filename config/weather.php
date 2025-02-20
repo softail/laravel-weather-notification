@@ -20,4 +20,9 @@ return [
         'url' => env('WEATHER_API_API_URL'),
         'key' => env('WEATHER_API_API_KEY'),
     ],
+
+    'weather_bit' => [
+        'url' => env('WEATHER_BIT_API_URL'),
+        'key' => env('WEATHER_BIT_API_KEY'),
+    ],
 ];

@@ -37,6 +37,7 @@ class OpenMeteoWeatherService implements WeatherInterface
             'longitude' => $coordinates['lon'],
             'current' => 'temperature_2m,precipitation,wind_speed_10m',
             'timezone' => 'auto',
+            'daily' => 'uv_index_max,precipitation_sum',
             'forecast_days' => $days,
         ];
 
@@ -49,8 +50,8 @@ class OpenMeteoWeatherService implements WeatherInterface
                     'precipitation' => data_get(json_decode($response, true), 'current.precipitation'),
                     'wind_speed' => data_get(json_decode($response, true), 'current.wind_speed_10m'),
                 ],
-                'uv_index' => data_get(json_decode($response, true), 'daily.uv_index_max.0', 0),
-                'precipitation' => data_get(json_decode($response, true), 'daily.precipitation_sum.0', 0),
+                'uv_index' => data_get(json_decode($response, true), 'daily.uv_index_max.0'),
+                'precipitation' => data_get(json_decode($response, true), 'daily.precipitation_sum.0'),
             ];
         } catch (\Exception $e) {
             Log::error($e->getMessage());

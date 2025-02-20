@@ -22,7 +22,9 @@ if (! function_exists('getAverageValues')) {
         $averages = $data->reduce(function ($carry, $item) {
             foreach ($item as $key => $value) {
                 if (is_array($value)) {
-                    $carry[$key] = isset($carry[$key]) ? getAverageValues([$carry[$key], $value]) : $value;
+                    $carry[$key] = isset($carry[$key])
+                        ? getAverageValues([$carry[$key], $value])
+                        : $value;
                 } else {
                     $carry[$key] = isset($carry[$key]) ? $carry[$key] + $value : $value;
                 }
@@ -31,12 +33,13 @@ if (! function_exists('getAverageValues')) {
             return $carry;
         }, []);
 
-        return collect($averages)->map(function ($sum) use ($data) {
+        return collect($averages)->map(function ($sum, $key) use ($data) {
             if (is_array($sum)) {
-                return getAverageValues([$sum]);
+                return getAverageValues($data->pluck($key)->filter(fn ($v) => is_array($v))->toArray());
             }
 
             return (float) number_format($sum / $data->count(), 1);
         })->toArray();
+
     }
 }

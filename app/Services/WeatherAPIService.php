@@ -45,8 +45,8 @@ class WeatherAPIService implements WeatherInterface
                     'precipitation' => data_get(json_decode($response, true), 'current.precip_mm'),
                     'wind_speed' => data_get(json_decode($response, true), 'current.wind_kph'),
                 ],
-                'uv_index' => data_get(json_decode($response, true), 'forecast.forecastday.0.day.uv', 0),
-                'precipitation' => data_get(json_decode($response, true), 'forecast.forecastday.0.day.totalprecip_mm', 0),
+                'uv_index' => data_get(json_decode($response, true), 'forecast.forecastday.0.day.uv'),
+                'precipitation' => data_get(json_decode($response, true), 'forecast.forecastday.0.day.totalprecip_mm'),
             ];
         } catch (\Exception $e) {
             Log::error($e->getMessage());
