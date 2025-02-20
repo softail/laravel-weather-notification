@@ -22,10 +22,12 @@ if (! function_exists('getAverageValues')) {
         $averages = $data->reduce(function ($carry, $item) {
             foreach ($item as $key => $value) {
                 if (is_array($value)) {
+                    // Recursively calculate averages for nested arrays
                     $carry[$key] = isset($carry[$key])
                         ? getAverageValues([$carry[$key], $value])
                         : $value;
-                } else {
+                } elseif ($value !== null) {
+                    // Sum only non-null scalar values
                     $carry[$key] = isset($carry[$key]) ? $carry[$key] + $value : $value;
                 }
             }
@@ -35,11 +37,16 @@ if (! function_exists('getAverageValues')) {
 
         return collect($averages)->map(function ($sum, $key) use ($data) {
             if (is_array($sum)) {
-                return getAverageValues($data->pluck($key)->filter(fn ($v) => is_array($v))->toArray());
+                // Process nested averages but exclude `null` values
+                $filtered = $data->pluck($key)->filter(fn ($v) => is_array($v))->toArray();
+
+                return getAverageValues($filtered);
             }
 
-            return (float) number_format($sum / $data->count(), 1);
-        })->toArray();
+            // Filter out `null` values when calculating the count for scalar values
+            $nonNullValues = $data->pluck($key)->filter(fn ($v) => $v !== null);
 
+            return (float) number_format($sum / $nonNullValues->count(), 1);
+        })->toArray();
     }
 }
