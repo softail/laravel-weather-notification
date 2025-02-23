@@ -36,11 +36,12 @@ const notifyBy = computed(() => {
 
 const form = useForm({
   location: props.location.id,
-  notify_by: notifyBy.value
+  notify_by: notifyBy.value,
 });
 
 const showSettings = ref(false);
 const confirmingLocationDeletion = ref(false);
+const settingsRef = ref<HTMLDivElement | null>(null);
 
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement | null;
@@ -86,6 +87,17 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
+
+const handleClick = (event: MouseEvent) => {
+  if (!settingsRef.value) {
+    return;
+  }
+
+  const rect = (event.target as HTMLElement).getBoundingClientRect();
+  settingsRef.value.style.left = rect.left - (200 - rect.width) + 'px';
+  settingsRef.value.style.top = rect.top + rect.height + 5 + 'px';
+  showSettings.value = !showSettings.value;
+};
 </script>
 
 <template>
@@ -115,47 +127,50 @@ onBeforeUnmount(() => {
     </Link>
 
     <button
-      @click="showSettings = !showSettings"
+      @click="handleClick"
       class="settings-button flex h-12 w-16 items-center justify-center rounded-md bg-white p-0 text-3xl transition hover:bg-gray-100 dark:bg-gray-800 hover:dark:bg-gray-500"
     >
       &middot; &middot; &middot;
     </button>
 
-    <div
-      v-show="showSettings"
-      class="settings absolute right-0 top-[105%] z-[10] rounded-md bg-gray-50 p-4 text-lg shadow-lg transition dark:bg-gray-500"
-    >
-      <div>
-        <h3>Notify By</h3>
+    <Teleport to="body">
+      <div
+        ref="settingsRef"
+        v-show="showSettings"
+        class="settings absolute z-[10] w-[200px] rounded-md bg-gray-50 p-4 text-lg shadow-lg transition dark:bg-gray-500"
+      >
+        <div>
+          <h3 class="font-bold dark:text-gray-200">Notify By</h3>
 
-        <div class="mt-4 flex flex-col space-y-4">
-          <Toggle
-            v-for="(type, index) in notificationTypes"
-            :key="index"
-            :value="type"
-            v-model="form.notify_by[index]"
-          />
+          <div class="mt-4 flex flex-col space-y-4">
+            <Toggle
+              v-for="(type, index) in notificationTypes"
+              :key="index"
+              :value="type"
+              v-model="form.notify_by[index]"
+            />
+          </div>
+        </div>
+
+        <hr class="my-4" />
+
+        <div class="flex justify-between space-x-4">
+          <button
+            @click="updateLocation"
+            class="w-full rounded-md bg-green-400 px-3 py-1 text-white shadow-md transition hover:bg-green-500 dark:bg-green-700"
+          >
+            Save
+          </button>
+
+          <button
+            @click="confirmingLocationDeletion = true"
+            class="w-full rounded-md bg-red-400 px-3 py-1 text-white shadow-md transition hover:bg-red-500 dark:bg-red-700"
+          >
+            Delete
+          </button>
         </div>
       </div>
-
-      <hr class="my-4" />
-
-      <div class="flex justify-between space-x-4">
-        <button
-          @click="updateLocation"
-          class="w-full rounded-md bg-green-400 px-3 py-1 text-white shadow-md transition hover:bg-green-500 dark:bg-green-700"
-        >
-          Save
-        </button>
-
-        <button
-          @click="confirmingLocationDeletion = true"
-          class="w-full rounded-md bg-red-400 px-3 py-1 text-white shadow-md transition hover:bg-red-500 dark:bg-red-700"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
+    </Teleport>
   </div>
 
   <Modal :show="confirmingLocationDeletion" @close="closeModal">
